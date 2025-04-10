@@ -14,8 +14,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: superfly/flyctl-actions/setup-flyctl@master
       - run: flyctl deploy --remote-only \
-          --build-secret SENTRY_DSN="${{ secrets.SENTRY_DSN }}" \
-          --build-secret API_AUTH_TOKEN="${{ secrets.API_AUTH_TOKEN }}"
-          --build-arg API_ENDPOINT="https://debug-server.fly.dev"
+          --build-secret "SENTRY_DSN=${{ secrets.SENTRY_DSN }}" \
+          --build-secret "API_AUTH_TOKEN=${{ secrets.API_AUTH_TOKEN }}" \
+          --build-arg "API_ENDPOINT=https://debug-server.fly.dev"
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
