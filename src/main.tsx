@@ -15,7 +15,7 @@ Sentry.init({
       blockAllMedia: false,
       networkDetailAllowUrls: [
         window.location.origin,
-        import.meta.env.VITE_REGEN_ENDPOINT,
+        import.meta.env.VITE_API_ENDPOINT,
       ],
       _experiments: {
         traceInternals: true,
