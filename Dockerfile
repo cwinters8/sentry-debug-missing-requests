@@ -16,6 +16,10 @@ ENV NODE_ENV="production"
 # Throw-away build stage to reduce size of final image
 FROM base AS build
 
+ARG API_ENDPOINT
+
+ENV VITE_API_ENDPOINT="${API_ENDPOINT}"
+
 # Install packages needed to build node modules
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential node-gyp pkg-config python-is-python3
@@ -28,7 +32,9 @@ RUN npm ci --include=dev
 COPY . .
 
 # Build application
-RUN npm run build
+RUN --mount=type=secret,id=SENTRY_DSN,env=VITE_SENTRY_DSN \
+	--mount=type=secret,id=API_AUTH_TOKEN,env=VITE_API_AUTH_TOKEN \
+	npm run build
 
 # Remove development dependencies
 RUN npm prune --omit=dev
