@@ -2,10 +2,48 @@ import { useState } from "react"
 import reactLogo from "./assets/react.svg"
 import viteLogo from "/vite.svg"
 import "./App.css"
+import {
+  useQuery,
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query"
+
+const queryClient = new QueryClient()
+
+const fetchSecureData = async () => {
+  const response = await fetch(`${import.meta.env.VITE_API_ENDPOINT}/secure`, {
+    method: "GET",
+    mode: "cors",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: import.meta.env.VITE_API_AUTH_TOKEN,
+    },
+  })
+
+  if (!response.ok) {
+    throw new Error("Network response was not ok")
+  }
+
+  return response.json()
+}
 
 function App() {
   const [count, setCount] = useState(0)
   const [status, setStatus] = useState("")
+
+  const { refetch: refetchSecure } = useQuery({
+    queryKey: ["secureData"],
+    queryFn: fetchSecureData,
+    enabled: false, // Don't run the query automatically
+
+    onSuccess: (data) => {
+      setStatus(data.status)
+    },
+    onError: (error: Error) => {
+      console.error("Error fetching secure data:", error)
+      setStatus("Error fetching secure data")
+    },
+  })
 
   return (
     <>
@@ -68,4 +106,12 @@ function App() {
   )
 }
 
-export default App
+function AppWithQueryClient() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <App />
+    </QueryClientProvider>
+  )
+}
+
+export default AppWithQueryClient
